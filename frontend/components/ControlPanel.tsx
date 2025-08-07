@@ -50,17 +50,63 @@ export default function ControlPanel({
   const [dropoffY, setDropoffY] = useState("80");
   const [selectedRiderId, setSelectedRiderId] = useState<number | "">("");
 
+  // Error states for coordinate validation
+  const [driverError, setDriverError] = useState("");
+  const [riderError, setRiderError] = useState("");
+
+  // Coordinate validation function
+  const validateCoordinate = (
+    value: string,
+    min: number = 0,
+    max: number = 99
+  ): boolean => {
+    const num = parseInt(value);
+    return !isNaN(num) && num >= min && num <= max;
+  };
+
+  // Validate driver coordinates
+  const validateDriverCoordinates = () => {
+    const xValid = validateCoordinate(driverX);
+    const yValid = validateCoordinate(driverY);
+
+    if (!xValid || !yValid) {
+      setDriverError("Please enter coordinates within range (0-99)");
+      return false;
+    }
+    setDriverError("");
+    return true;
+  };
+
+  // Validate rider coordinates
+  const validateRiderCoordinates = () => {
+    const pickupXValid = validateCoordinate(pickupX);
+    const pickupYValid = validateCoordinate(pickupY);
+    const dropoffXValid = validateCoordinate(dropoffX);
+    const dropoffYValid = validateCoordinate(dropoffY);
+
+    if (!pickupXValid || !pickupYValid || !dropoffXValid || !dropoffYValid) {
+      setRiderError("Please enter coordinates within range (0-99)");
+      return false;
+    }
+    setRiderError("");
+    return true;
+  };
+
   const handleAddDriver = () => {
-    onAddDriver(parseInt(driverX) || 0, parseInt(driverY) || 0);
+    if (validateDriverCoordinates()) {
+      onAddDriver(parseInt(driverX) || 0, parseInt(driverY) || 0);
+    }
   };
 
   const handleAddRider = () => {
-    onAddRider(
-      parseInt(pickupX) || 0,
-      parseInt(pickupY) || 0,
-      parseInt(dropoffX) || 0,
-      parseInt(dropoffY) || 0
-    );
+    if (validateRiderCoordinates()) {
+      onAddRider(
+        parseInt(pickupX) || 0,
+        parseInt(pickupY) || 0,
+        parseInt(dropoffX) || 0,
+        parseInt(dropoffY) || 0
+      );
+    }
   };
 
   const handleCreateRequest = () => {
@@ -91,8 +137,13 @@ export default function ControlPanel({
                   max="99"
                   placeholder="X"
                   value={driverX}
-                  onChange={(e) => setDriverX(e.target.value)}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setDriverX(e.target.value);
+                    setDriverError(""); // Clear error when user starts typing
+                  }}
+                  className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    driverError ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
                 <input
                   type="number"
@@ -100,10 +151,18 @@ export default function ControlPanel({
                   max="99"
                   placeholder="Y"
                   value={driverY}
-                  onChange={(e) => setDriverY(e.target.value)}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setDriverY(e.target.value);
+                    setDriverError(""); // Clear error when user starts typing
+                  }}
+                  className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    driverError ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
               </div>
+              {driverError && (
+                <p className="text-red-500 text-xs mt-1">{driverError}</p>
+              )}
             </div>
             {/* Driver Buttons */}
             <div className="grid grid-cols-2 gap-2">
@@ -145,8 +204,13 @@ export default function ControlPanel({
                       max="99"
                       placeholder="X"
                       value={pickupX}
-                      onChange={(e) => setPickupX(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onChange={(e) => {
+                        setPickupX(e.target.value);
+                        setRiderError(""); // Clear error when user starts typing
+                      }}
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        riderError ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
                     <input
                       type="number"
@@ -154,8 +218,13 @@ export default function ControlPanel({
                       max="99"
                       placeholder="Y"
                       value={pickupY}
-                      onChange={(e) => setPickupY(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onChange={(e) => {
+                        setPickupY(e.target.value);
+                        setRiderError(""); // Clear error when user starts typing
+                      }}
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        riderError ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
                   </div>
                 </div>
@@ -169,8 +238,13 @@ export default function ControlPanel({
                       max="99"
                       placeholder="X"
                       value={dropoffX}
-                      onChange={(e) => setDropoffX(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onChange={(e) => {
+                        setDropoffX(e.target.value);
+                        setRiderError(""); // Clear error when user starts typing
+                      }}
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        riderError ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
                     <input
                       type="number"
@@ -178,12 +252,20 @@ export default function ControlPanel({
                       max="99"
                       placeholder="Y"
                       value={dropoffY}
-                      onChange={(e) => setDropoffY(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onChange={(e) => {
+                        setDropoffY(e.target.value);
+                        setRiderError(""); // Clear error when user starts typing
+                      }}
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        riderError ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
                   </div>
                 </div>
               </div>
+              {riderError && (
+                <p className="text-red-500 text-xs mt-1">{riderError}</p>
+              )}
             </div>
             {/* Rider Buttons */}
             <div className="grid grid-cols-2 gap-2">
