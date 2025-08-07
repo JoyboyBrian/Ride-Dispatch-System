@@ -26,6 +26,7 @@ interface ControlPanelProps {
   onAdvanceTime: () => void;
   onRefreshStatus: () => void;
   onResetAll: () => void;
+  onInitializeSampleData: () => void;
 }
 
 export default function ControlPanel({
@@ -39,6 +40,7 @@ export default function ControlPanel({
   onAdvanceTime,
   onRefreshStatus,
   onResetAll,
+  onInitializeSampleData,
 }: ControlPanelProps) {
   const [driverX, setDriverX] = useState("10");
   const [driverY, setDriverY] = useState("10");
@@ -68,226 +70,213 @@ export default function ControlPanel({
   };
 
   return (
-    <div className="bg-gray-50 rounded-xl p-6 space-y-6">
-      {/* Driver Management */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
-          🚗 Driver Management
-        </h3>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              X Coordinate:
-            </label>
-            <input
-              type="number"
-              min="0"
-              max="99"
-              value={driverX}
-              onChange={(e) => setDriverX(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-            />
+    <div className="bg-gray-50 rounded-xl p-6">
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Driver Card */}
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <h3 className="text-sm font-semibold mb-3 text-gray-800">
+            🚗 Driver Management
+          </h3>
+          <div className="space-y-3">
+            {/* Driver Coordinates */}
+            <div>
+              <h4 className="text-xs font-medium text-gray-600 mb-2">
+                Position
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  max="99"
+                  placeholder="X"
+                  value={driverX}
+                  onChange={(e) => setDriverX(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="99"
+                  placeholder="Y"
+                  value={driverY}
+                  onChange={(e) => setDriverY(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            {/* Driver Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleAddDriver}
+                className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+              >
+                Add Driver
+              </button>
+              <button
+                onClick={onRemoveDriver}
+                className="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors text-sm"
+              >
+                Remove Driver
+              </button>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Y Coordinate:
-            </label>
-            <input
-              type="number"
-              min="0"
-              max="99"
-              value={driverY}
-              onChange={(e) => setDriverY(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-            />
+        </div>
+
+        {/* Rider Card */}
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <h3 className="text-sm font-semibold mb-3 text-gray-800">
+            👤 Rider Management
+          </h3>
+          <div className="space-y-3">
+            {/* Rider Coordinates */}
+            <div>
+              <h4 className="text-xs font-medium text-gray-600 mb-2">
+                Coordinates
+              </h4>
+              <div className="space-y-2">
+                {/* Pickup */}
+                <div>
+                  <h5 className="text-xs text-gray-500 mb-1">Pickup</h5>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="99"
+                      placeholder="X"
+                      value={pickupX}
+                      onChange={(e) => setPickupX(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="99"
+                      placeholder="Y"
+                      value={pickupY}
+                      onChange={(e) => setPickupY(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                {/* Dropoff */}
+                <div>
+                  <h5 className="text-xs text-gray-500 mb-1">Dropoff</h5>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="99"
+                      placeholder="X"
+                      value={dropoffX}
+                      onChange={(e) => setDropoffX(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="99"
+                      placeholder="Y"
+                      value={dropoffY}
+                      onChange={(e) => setDropoffY(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Rider Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleAddRider}
+                className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+              >
+                Add Rider
+              </button>
+              <button
+                onClick={onRemoveRider}
+                className="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors text-sm"
+              >
+                Remove Rider
+              </button>
+            </div>
           </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={handleAddDriver}
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Add Driver
-            </button>
-            <button
-              onClick={onRemoveDriver}
-              className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-            >
-              Remove Driver
-            </button>
+        </div>
+
+        {/* Request & Dispatch Card */}
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          <h3 className="text-sm font-semibold mb-3 text-gray-800">
+            🚀 Request & Dispatch
+          </h3>
+          <div className="space-y-3">
+            {/* Rider Selection */}
+            <div>
+              <h4 className="text-xs font-medium text-gray-600 mb-2">
+                Select Rider
+              </h4>
+              <select
+                value={selectedRiderId}
+                onChange={(e) =>
+                  setSelectedRiderId(
+                    e.target.value ? parseInt(e.target.value) : ""
+                  )
+                }
+                className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="">Select rider</option>
+                {riders.map((rider) => (
+                  <option key={rider.id} value={rider.id}>
+                    Rider {rider.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Request & Dispatch Buttons */}
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                onClick={handleCreateRequest}
+                disabled={selectedRiderId === ""}
+                className="w-full bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
+              >
+                Create Request
+              </button>
+              <button
+                onClick={onDispatchRides}
+                className="w-full bg-yellow-600 text-white px-3 py-2 rounded-md hover:bg-yellow-700 transition-colors text-sm"
+              >
+                Dispatch Rides
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Rider Management */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
-          👤 Rider Management
-        </h3>
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pickup X:
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="99"
-                value={pickupX}
-                onChange={(e) => setPickupX(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pickup Y:
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="99"
-                value={pickupY}
-                onChange={(e) => setPickupY(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dropoff X:
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="99"
-                value={dropoffX}
-                onChange={(e) => setDropoffX(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dropoff Y:
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="99"
-                value={dropoffY}
-                onChange={(e) => setDropoffY(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-              />
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={handleAddRider}
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Add Rider
-            </button>
-            <button
-              onClick={onRemoveRider}
-              className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-            >
-              Remove Rider
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Ride Requests */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
-          🚀 Ride Requests
-        </h3>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Rider ID:
-            </label>
-            <select
-              value={selectedRiderId}
-              onChange={(e) =>
-                setSelectedRiderId(
-                  e.target.value ? parseInt(e.target.value) : ""
-                )
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Select a rider</option>
-              {riders.map((rider) => (
-                <option key={rider.id} value={rider.id}>
-                  Rider {rider.id} ({rider.pickup_x}, {rider.pickup_y}) → (
-                  {rider.dropoff_x}, {rider.dropoff_y})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={handleCreateRequest}
-              disabled={selectedRiderId === ""}
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              Create Request
-            </button>
-            <button
-              onClick={onDispatchRides}
-              className="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition-colors"
-            >
-              Dispatch Rides
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Time Control */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
-          ⏰ Time Control
-        </h3>
-        <div className="space-y-3">
-          <div className="text-xs text-gray-600 mb-2">
-            <p>
-              • <strong>Next Tick</strong>: Advance time, move all drivers one
-              step
-            </p>
-            <p>
-              • Drivers automatically travel to pickup points, then to
-              destinations
-            </p>
-            <p>• Check activity log for detailed progress</p>
-          </div>
-          <button
-            onClick={onAdvanceTime}
-            className="w-full bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition-colors"
-          >
-            Next Tick
-          </button>
-          <button
-            onClick={onRefreshStatus}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Refresh Status
-          </button>
-        </div>
-      </div>
-
-      {/* System Control */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
-          🔄 System Control
-        </h3>
-        <div className="space-y-3">
-          <button
-            onClick={onResetAll}
-            className="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-          >
-            Reset All Data
-          </button>
-        </div>
+      {/* System Control Buttons */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <button
+          onClick={onAdvanceTime}
+          className="bg-yellow-600 text-white px-3 py-2 rounded-md hover:bg-yellow-700 transition-colors text-sm"
+        >
+          Next Tick
+        </button>
+        <button
+          onClick={onRefreshStatus}
+          className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
+        >
+          Refresh Status
+        </button>
+        <button
+          onClick={onInitializeSampleData}
+          className="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors text-sm"
+        >
+          Initialize Sample Data
+        </button>
+        <button
+          onClick={onResetAll}
+          className="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors text-sm"
+        >
+          Reset All Data
+        </button>
       </div>
     </div>
   );

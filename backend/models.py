@@ -100,6 +100,7 @@ class RideRequestResponse(BaseModel):
     status: RequestStatus = Field(..., description="Request status")
     attempts: int = Field(..., description="Attempt count")
     assigned_driver_id: Optional[int] = Field(None, description="Assigned driver ID")
+    picked_up: bool = Field(False, description="Whether passenger has been picked up")
 
 # ==================== Internal Data Models (Server internal use) ====================
 
@@ -136,6 +137,7 @@ class RideRequest(BaseModel):
 
 class SystemStatusResponse(BaseModel):
     """System status response model"""
+    current_time: int = Field(..., description="Current system time")
     drivers: dict = Field(..., description="Driver status statistics")
     riders: dict = Field(..., description="Rider status statistics")
     requests: dict = Field(..., description="Request status statistics")

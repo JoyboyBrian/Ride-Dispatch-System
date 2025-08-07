@@ -28,6 +28,7 @@ interface Request {
   status: "waiting" | "assigned" | "rejected" | "completed" | "failed";
   attempts: number;
   assigned_driver_id?: number;
+  picked_up: boolean;
 }
 
 interface GridVisualizationProps {
@@ -156,22 +157,29 @@ export default function GridVisualization({
             )
             .map((request) => (
               <div key={`request-${request.id}`}>
-                {createEntityElement(
-                  {
-                    x: request.pickup_x,
-                    y: request.pickup_y,
-                    id: `pickup_${request.id}`,
-                  },
-                  "pickup"
-                )}
-                {createEntityElement(
-                  {
-                    x: request.dropoff_x,
-                    y: request.dropoff_y,
-                    id: `dropoff_${request.id}`,
-                  },
-                  "dropoff"
-                )}
+                {/* Only show pickup point for waiting or assigned requests that haven't been picked up */}
+                {(request.status === "waiting" ||
+                  request.status === "assigned") &&
+                  !request.picked_up &&
+                  createEntityElement(
+                    {
+                      x: request.pickup_x,
+                      y: request.pickup_y,
+                      id: `pickup_${request.id}`,
+                    },
+                    "pickup"
+                  )}
+                {/* Show dropoff point only for active requests that haven't been completed */}
+                {(request.status === "waiting" ||
+                  request.status === "assigned") &&
+                  createEntityElement(
+                    {
+                      x: request.dropoff_x,
+                      y: request.dropoff_y,
+                      id: `dropoff_${request.id}`,
+                    },
+                    "dropoff"
+                  )}
               </div>
             ))}
         </div>
@@ -207,6 +215,18 @@ export default function GridVisualization({
         <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
           Drivers: {drivers.length}, Riders: {riders.length}, Requests:{" "}
           {requests.length}
+          <br />
+          Active Requests:{" "}
+          {
+            requests.filter(
+              (r) => r.status === "waiting" || r.status === "assigned"
+            ).length
+          }
+          <br />
+          {requests
+            .filter((r) => r.status === "waiting" || r.status === "assigned")
+            .map((req) => `R${req.id}: ${req.status} picked=${req.picked_up}`)
+            .join(", ")}
         </div>
 
         {/* Tooltip */}

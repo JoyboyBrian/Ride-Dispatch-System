@@ -11,7 +11,7 @@ export default function ActivityLog({ logs }: ActivityLogProps) {
         📝 Activity Log
       </h3>
 
-      <div className="max-h-48 overflow-y-auto space-y-1">
+      <div className="h-64 overflow-y-auto space-y-1">
         {logs.length === 0 ? (
           <div className="text-gray-500 text-center py-4 text-sm">
             No activity yet

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import GridVisualization from "@/components/GridVisualization";
-import ControlPanel from "@/components/ControlPanel";
-import StatusPanel from "@/components/StatusPanel";
-import ActivityLog from "@/components/ActivityLog";
+import GridVisualization from "../components/GridVisualization";
+import ControlPanel from "../components/ControlPanel";
+import StatusPanel from "../components/StatusPanel";
+import ActivityLog from "../components/ActivityLog";
 
 interface Driver {
   id: number;
@@ -32,6 +32,7 @@ interface Request {
   status: "waiting" | "assigned" | "rejected" | "completed" | "failed";
   attempts: number;
   assigned_driver_id?: number;
+  picked_up: boolean;
 }
 
 interface SystemStatus {
@@ -81,7 +82,16 @@ export default function Home() {
 
       if (driversRes.ok) setDrivers(await driversRes.json());
       if (ridersRes.ok) setRiders(await ridersRes.json());
-      if (requestsRes.ok) setRequests(await requestsRes.json());
+      if (requestsRes.ok) {
+        const requestsData = await requestsRes.json();
+        setRequests(requestsData);
+        // Debug: Log request states
+        requestsData.forEach((req: Request) => {
+          addLog(
+            `Request ${req.id}: status=${req.status}, picked_up=${req.picked_up}`
+          );
+        });
+      }
       if (statusRes.ok) setSystemStatus(await statusRes.json());
     } catch (error) {
       addLog(`Error fetching data: ${error}`);
@@ -298,10 +308,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    initializeSampleData();
-  }, []);
-
   // Auto-refresh data every 2 seconds to show real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -313,24 +319,44 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-4">
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="max-w-8xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 text-center">
           <h1 className="text-4xl font-bold mb-2">🚗 Ride Dispatch System</h1>
           <p className="text-lg opacity-90">
             Intelligent ride dispatch simulation with real-time visualization
           </p>
+
+          {/* Time Display */}
+          {systemStatus && (
+            <div className="mt-4 bg-white bg-opacity-20 rounded-lg p-3 inline-block">
+              <div className="text-2xl font-bold">
+                ⏰ Current Time: {systemStatus.current_time}
+              </div>
+              <div className="text-sm opacity-90">
+                Click "Next Tick" to advance time
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-          <div className="lg:col-span-2">
-            <GridVisualization
-              drivers={drivers}
-              riders={riders}
-              requests={requests}
-            />
+        <div className="p-6 space-y-6">
+          {/* Main Grid and Status Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-3">
+              <GridVisualization
+                drivers={drivers}
+                riders={riders}
+                requests={requests}
+              />
+            </div>
+
+            <div className="space-y-6">
+              <StatusPanel status={systemStatus} />
+            </div>
           </div>
 
-          <div className="space-y-6">
+          {/* Control Buttons Section - Below Grid */}
+          <div className="w-full">
             <ControlPanel
               riders={riders}
               onAddDriver={addDriver}
@@ -342,10 +368,12 @@ export default function Home() {
               onAdvanceTime={advanceTime}
               onRefreshStatus={fetchData}
               onResetAll={resetAllData}
+              onInitializeSampleData={initializeSampleData}
             />
+          </div>
 
-            <StatusPanel status={systemStatus} />
-
+          {/* Activity Log Section - At the bottom */}
+          <div className="w-full">
             <ActivityLog logs={logs} />
           </div>
         </div>
